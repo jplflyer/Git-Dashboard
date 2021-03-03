@@ -42,22 +42,35 @@ int
 Configuration::load() {
     string dirName = getConfigurationDirectory();
     string fileName = dirName + "/config.json";
-    int retVal = 1;
+    int retVal = 0;
 
     if (std::filesystem::exists(fileName) && std::filesystem::is_regular_file(fileName)) {
-        std::ifstream configFile(fileName);
-        std::stringstream buffer;
-        buffer << configFile.rdbuf();
-        string contents = buffer.str();
-
-        if (contents.size() > 0u && contents.at(0) == '{') {
-            JSON json = JSON::parse(buffer.str());
-            singleton().fromJSON(json);
-            retVal = 0;
-        }
+        singleton().loadFile(fileName);
+        retVal = 1;
     }
 
     return retVal;
+}
+
+/**
+ * Load this file.
+ */
+void Configuration::loadFile(const std::string &fileName) {
+    std::ifstream configFile(fileName);
+    std::stringstream buffer;
+    buffer << configFile.rdbuf();
+    string contents = buffer.str();
+
+    if (contents.size() > 0u && contents.at(0) == '{') {
+        JSON json = JSON::parse(buffer.str());
+        fromJSON(json);
+    }
+
+    for (Repository::Pointer &repo: repositories) {
+        Git::URI uri { repo->gitRemote()->url() };
+        SSHKey::Pointer sshKey = lookupCredentialForHost(uri.getHost());
+        repo->setKey(sshKey);
+    }
 }
 
 /**
@@ -198,6 +211,33 @@ Configuration::lookupCredentialForHost(const std::string &hostStr) {
     return newHost;
 }
 
+/**
+ * This gets called at startup to see which files need passwords.
+ * We'll then pop up a window to ask the user for each of them.
+ */
+StringVector
+Configuration::sshFilesNeedingPasswords() const {
+    StringVector retVal;
+
+    for (const SSHKey::Pointer & key : credentials) {
+        retVal.add(key->getPrivateFile());
+    }
+
+    return retVal;
+}
+
+/**
+ * The user provided this password.
+ */
+void
+Configuration::setSSHPassword(const std::string &forFile, const std::string &password) {
+    for (const SSHKey::Pointer & key : credentials) {
+        if (key->getPrivateFile() == forFile) {
+            key->setPassword(password);
+            break;
+        }
+    }
+}
 
 
 //======================================================================
@@ -239,10 +279,7 @@ Repository::setDirectory(const std::string &value) {
  */
 string
 Repository::currentBranch() {
-    if (branchName.length() == 0) {
-    }
-
-    return branchName;
+    return repository->currentBranch();
 }
 
 //======================================================================

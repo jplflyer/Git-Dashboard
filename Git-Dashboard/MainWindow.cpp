@@ -19,11 +19,20 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->menubar->setVisible(true);
 
+    configurationChanged();
+    timerId = startTimer(15000);
+}
+
+/**
+ * Either it's startup or the config has changed.
+ */
+void
+MainWindow::configurationChanged() {
     Configuration & config = Configuration::singleton();
-    int numRows = config.getRows();
-    int numCols = config.getRows();
     const Repository::Vector & repos = config.getRepositories();
     int repoCount = repos.size();
+    int numRows = config.getRows();
+    int numCols = config.getColumns();
 
     if (numRows == 0 && numCols == 0) {
         numRows = ceil(static_cast<double>(repoCount) / 4.0);
@@ -39,9 +48,20 @@ MainWindow::MainWindow(QWidget *parent)
         numRows = ceil(static_cast<double>(repoCount) / static_cast<double>(numCols));
     }
 
-    cout << "Number of repos: " << repoCount
-         << ". Rows: " << numRows << ". Cols: " << numCols
-         << endl;
+    /**
+     * If this has changed, we need to erase all our old stuff.
+     */
+    if (numCols != displayedColumns) {
+        for (int index = 0; index < hostForms.size(); ++index) {
+            HostForm * hostForm = hostForms.at(index);
+            QWidget * thisRow = rows.at(index / displayedColumns);
+            hostForm->deleteLater();
+            thisRow->layout()->removeWidget(hostForm);
+        }
+        hostForms.clear();
+    }
+    displayedRows = numRows;
+    displayedColumns = numCols;
 
     // Mark top rows visible.
     for (int index = 0; index < rows.size() && index < numRows; ++index) {
@@ -66,10 +86,18 @@ MainWindow::MainWindow(QWidget *parent)
         rows.push_back(thisRow);
     }
 
+    // Update any that already exist.
+    for (int index = 0; index < hostForms.size(); ++index) {
+        HostForm * hostForm = hostForms.at(index);
+        hostForm->update();
+    }
+
+    // And create the rest.
     for (int index = hostForms.size(); index < repoCount; ++index) {
         Repository::Pointer repo = repos[index];
         QWidget * thisRow = rows.at(index / numCols);
         HostForm * form = new HostForm(repo, thisRow);
+        hostForms.push_back(form);
         thisRow->layout()->addWidget(form);
         form->show();
     }
@@ -77,10 +105,22 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    killTimer(timerId);
     delete ui;
 }
 
 void MainWindow::on_actionOpenConfiguration_triggered()
 {
     showConfigWindow();
+}
+
+/**
+ * Force an update.
+ */
+void
+MainWindow::timerEvent(QTimerEvent *event) {
+    for (int index = 0; index < hostForms.size(); ++index) {
+        HostForm * hostForm = hostForms.at(index);
+        hostForm->update();
+    }
 }

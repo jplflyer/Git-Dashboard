@@ -3,7 +3,9 @@
 #include <git2/global.h>
 
 #include "Configuration.h"
+
 #include "CreateConfigWindow.h"
+#include "GetPasswordsWindow.h"
 #include "MainWindow.h"
 
 extern void showMainWindow();
@@ -23,10 +25,16 @@ static CreateConfigWindow *configWindow = nullptr;
  * Show the main window.
  */
 void showMainWindow() {
+    bool shouldUpdate = true;
+
     if (mainWindow == nullptr) {
         mainWindow = new MainWindow();
+        shouldUpdate = false;
     }
     mainWindow->show();
+    if (shouldUpdate) {
+        mainWindow->configurationChanged();
+    }
 }
 
 /**
@@ -45,7 +53,7 @@ void showConfigWindow() {
  */
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
 
     git_libgit2_init();
 
@@ -55,10 +63,18 @@ int main(int argc, char *argv[])
         showMainWindow();
     }
     else {
-        showConfigWindow();
+        StringVector sshFilesNeedingPasswords = config.sshFilesNeedingPasswords();
+        if (sshFilesNeedingPasswords.size() > 0) {
+            GetPasswordsWindow * win = new GetPasswordsWindow(sshFilesNeedingPasswords);
+            win->setAttribute(Qt::WA_DeleteOnClose);
+            win->show();
+        }
+        else {
+            showConfigWindow();
+        }
     }
 
-    int rv = a.exec();
+    int rv = app.exec();
     git_libgit2_shutdown();
     return rv;
 }

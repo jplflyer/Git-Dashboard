@@ -18,6 +18,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void configurationChanged();
+
 private slots:
     void on_actionOpenConfiguration_triggered();
 
@@ -26,4 +29,10 @@ private:
 
     QVector<QWidget *> rows;
     QVector<HostForm *> hostForms;
+
+    int displayedRows = 0;
+    int displayedColumns = 0;
+    int timerId = 0;
+
+    void timerEvent(QTimerEvent *event);
 };

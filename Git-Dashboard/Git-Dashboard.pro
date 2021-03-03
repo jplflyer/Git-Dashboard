@@ -14,6 +14,7 @@ LIBS += -framework CoreFoundation -framework Security
 SOURCES += \
     Configuration.cpp \
     CreateConfigWindow.cpp \
+    GetPasswordsWindow.cpp \
     HostForm.cpp \
     main.cpp \
     MainWindow.cpp
@@ -22,11 +23,13 @@ HEADERS += \
     Configuration.h \
     CreateConfigWindow.h \
     GenericItemModel.h \
+    GetPasswordsWindow.h \
     HostForm.h \
     MainWindow.h
 
 FORMS += \
     CreateConfigWindow.ui \
+    GetPasswordsWindow.ui \
     HostForm.ui \
     MainWindow.ui
 

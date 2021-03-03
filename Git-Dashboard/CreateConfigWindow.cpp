@@ -14,6 +14,8 @@ using std::cout;
 using std::endl;
 using std::string;
 
+extern void showMainWindow();
+
 /**
  * Constructor.
  */
@@ -26,6 +28,11 @@ CreateConfigWindow::CreateConfigWindow(QWidget *parent) :
     model.addColumn("Visible", [](Repository::Pointer ptr) { return !ptr->isHidden(); });
     model.addColumn("Directory", [](Repository::Pointer ptr) { return QString::fromStdString(ptr->getDirectory()); } );
     model.addColumn("Branch", [](Repository::Pointer ptr) { return QString::fromStdString(ptr->currentBranch()); } );
+
+    Configuration & config = Configuration::singleton();
+
+    ui->columnsSpin->setValue(config.getColumns());
+    ui->rowsSpin->setValue(config.getRows());
 
     ui->repositoriesTable->setModel(&model);
 }
@@ -84,4 +91,17 @@ void CreateConfigWindow::on_addRepoPB_clicked()
  */
 void CreateConfigWindow::on_mainWindowPB_clicked()
 {
+    showMainWindow();
+}
+
+void CreateConfigWindow::on_rowsSpin_valueChanged(int value)
+{
+    Configuration::singleton().setRows(value);
+    Configuration::save();
+}
+
+void CreateConfigWindow::on_columnsSpin_valueChanged(int value)
+{
+    Configuration::singleton().setColumns(value);
+    Configuration::save();
 }

@@ -7,8 +7,10 @@
 #include <git2/repository.h>
 #include <git2/remote.h>
 
-#include <showlib/JSONSerializable.h>
 #include <nlohmann/json.hpp>
+
+#include <showlib/JSONSerializable.h>
+#include <showlib/StringVector.h>
 #include <git/Git.h>
 
 /**
@@ -79,7 +81,6 @@ public:
 
 private:
     std::string	directory;
-    std::string branchName;
     bool hidden = false;
 
     SSHKey::Pointer sshKey = nullptr;
@@ -117,6 +118,8 @@ private:
 
     SSHKey::Pointer lookupCredentialForHost(const std::string &host);
 
+    void loadFile(const std::string &);
+
 public:
     static Configuration & singleton();
 
@@ -131,5 +134,11 @@ public:
     int getRows() const { return rows; }
     int getColumns() const { return columns; }
     const Repository::Vector & getRepositories() const { return repositories; };
+
+    void setRows(int value) { rows = value; }
+    void setColumns(int value) { columns = value; }
+
+    ShowLib::StringVector sshFilesNeedingPasswords() const;
+    void setSSHPassword(const std::string &forFile, const std::string &password);
 };
 
