@@ -5,6 +5,7 @@
 #include <unistd.h>
 
 #include <QFileDialog>
+#include <QInputDialog>
 
 #include "CreateConfigWindow.h"
 #include "ui_CreateConfigWindow.h"
@@ -54,10 +55,28 @@ void CreateConfigWindow::on_addRepoPB_clicked()
     QString homeDir { pwd->pw_dir };
 
     QString dirName = QFileDialog::getExistingDirectory(this, "Repository Directory", homeDir);
-    if (Configuration::singleton().addRepository(dirName.toStdString())) {
-        Configuration::save();
-        update();
+
+    Repository::Pointer repo =  Configuration::singleton().addRepository(dirName.toStdString());
+
+    SSHKey::Pointer key = repo->getKey();
+    if (key->getPassword().length() == 0) {
+        bool ok;
+        string prompt = string{"Password for "} + key->getPrivateFile();
+        QString pw = QInputDialog::getText(
+                    this,
+                    tr("Enter Password"),
+                    QString::fromStdString(prompt),
+                    QLineEdit::Password,
+                    tr(""),
+                    &ok);
+
+        if (ok && !pw.isEmpty()) {
+            key->setPassword(pw.toStdString());
+        }
     }
+
+    Configuration::save();
+    update();
 }
 
 /**

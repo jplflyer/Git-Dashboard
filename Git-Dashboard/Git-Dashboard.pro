@@ -14,6 +14,7 @@ LIBS += -framework CoreFoundation -framework Security
 SOURCES += \
     Configuration.cpp \
     CreateConfigWindow.cpp \
+    HostForm.cpp \
     main.cpp \
     MainWindow.cpp
 
@@ -21,10 +22,12 @@ HEADERS += \
     Configuration.h \
     CreateConfigWindow.h \
     GenericItemModel.h \
+    HostForm.h \
     MainWindow.h
 
 FORMS += \
     CreateConfigWindow.ui \
+    HostForm.ui \
     MainWindow.ui
 
 # Default rules for deployment.

@@ -1,6 +1,10 @@
 #pragma once
 
 #include <QMainWindow>
+#include <QVector>
+#include <QWidget>
+
+#include "HostForm.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -19,4 +23,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    QVector<QWidget *> rows;
+    QVector<HostForm *> hostForms;
 };

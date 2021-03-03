@@ -60,6 +60,7 @@ public:
 
     std::string getDirectory() const { return directory; }
     bool isHidden() const { return hidden; }
+    SSHKey::Pointer getKey() const { return sshKey; }
 
     Repository & setDirectory(const std::string &value);
     Repository & setIsHidden(bool value) { hidden = value; return *this; }
