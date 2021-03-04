@@ -59,6 +59,8 @@ HostForm::~HostForm()
  */
 void
 HostForm::update() {
+    repository->fetch();
+
     string branch = repository->currentBranch();
     int ahead = repository->gitRepository()->commitsAheadRemote();
     int behind = repository->gitRepository()->commitsBehindRemote();

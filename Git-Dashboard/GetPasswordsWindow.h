@@ -24,7 +24,7 @@ private slots:
 private:
     Ui::GetPasswordsWindow *ui;
     ShowLib::StringVector sshFilesNeedingPasswords;
-    int fileIndex = 0;
+    size_t fileIndex = 0;
 
     void setPrompts();
 };

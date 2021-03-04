@@ -11,6 +11,7 @@
 
 #include <showlib/JSONSerializable.h>
 #include <showlib/StringVector.h>
+#include <showlib/SSHConfiguration.h>
 #include <git/Git.h>
 
 /**
@@ -28,23 +29,22 @@ public:
     SSHKey() = default;
     virtual ~SSHKey();
 
-    SSHKey & setFile(const std::string &);
-    SSHKey & setHost(const std::string &);
+    SSHKey & setHost(ShowLib::SSH::Host::Pointer);
     SSHKey & setPassword(const std::string &);
     SSHKey & setSavePassword(bool);
 
-    const std::string & getPublicFile() const { return publicFile; }
-    const std::string & getPrivateFile() const { return privateFile; }
-    const std::string & getHost() const { return host; }
+    const std::string getPublicFile() const { return host->getIdentityFile() + ".pub"; }
+    const std::string & getPrivateFile() const { return host->getIdentityFile(); }
+    const ShowLib::SSH::Host::Pointer getHost() const { return host; }
     const std::string & getPassword() const { return password; }
 
     void fromJSON(const JSON &) override;
     JSON & toJSON(JSON &) const override;
 
 private:
-    std::string		publicFile;
-    std::string		privateFile;
-    std::string		host;
+    ShowLib::SSH::Host::Pointer host;
+
+    std::string		hostName;
     std::string		password;
     bool			savePassword = false;
 };
@@ -78,6 +78,8 @@ public:
 
     Git::Repository::Pointer gitRepository() { return repository; }
     Git::Remote::Pointer gitRemote() { return remote; }
+
+    void fetch();
 
 private:
     std::string	directory;

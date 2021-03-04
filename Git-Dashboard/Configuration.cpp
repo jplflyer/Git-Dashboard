@@ -168,7 +168,7 @@ Configuration::lookupCredentialForHost(const std::string &hostStr) {
     // See if we have this host. This is the simple case.
     //--------------------------------------------------
     for (SSHKey::Pointer &key: credentials) {
-        if (key->getHost() == hostStr) {
+        if (key->getHost()->matchHost(hostStr)) {
             return key;
         }
     }
@@ -195,7 +195,7 @@ Configuration::lookupCredentialForHost(const std::string &hostStr) {
     // for the same identity file but a different host.
     //--------------------------------------------------
     for (SSHKey::Pointer &key: credentials) {
-        if (key->getPrivateFile() == identityFile) {
+        if (key->getHost()->getIdentityFile() == identityFile) {
             return key;
         }
     }
@@ -204,8 +204,7 @@ Configuration::lookupCredentialForHost(const std::string &hostStr) {
     // We need to create a new one.
     //--------------------------------------------------
     SSHKey::Pointer newHost = std::make_shared<SSHKey>();
-    newHost->setHost(hostStr);
-    newHost->setFile(identityFile);
+    newHost->setHost(host);
     credentials.push_back(newHost);
 
     return newHost;
@@ -238,7 +237,6 @@ Configuration::setSSHPassword(const std::string &forFile, const std::string &pas
         }
     }
 }
-
 
 //======================================================================
 // Repositories.
@@ -282,6 +280,13 @@ Repository::currentBranch() {
     return repository->currentBranch();
 }
 
+void
+Repository::fetch() {
+    if (sshKey != nullptr) {
+        repository->fetch(sshKey->getHost(), sshKey->getPassword());
+    }
+}
+
 //======================================================================
 // SSH Credential Info
 //======================================================================
@@ -290,19 +295,9 @@ SSHKey::~SSHKey() {
 }
 
 /**
- * Files are named as "foo" for the private file and "foo.pub"
- * for the public file.
- */
-SSHKey & SSHKey::setFile(const std::string &value) {
-    privateFile = value;
-    publicFile = privateFile + ".pub";
-    return *this;
-}
-
-/**
  * What host is this key for?
  */
-SSHKey & SSHKey::setHost(const std::string &value) {
+SSHKey & SSHKey::setHost(ShowLib::SSH::Host::Pointer value) {
     host = value;
     return *this;
 }
@@ -328,8 +323,7 @@ SSHKey & SSHKey::setSavePassword(bool value) {
  * Populate from JSON.
  */
 void SSHKey::fromJSON(const JSON &json) {
-    setFile(stringValue(json, "file"));
-    setHost(stringValue(json, "host"));
+    hostName = stringValue(json, "host");
     setPassword(stringValue(json, "password"));
     savePassword = boolValue(json, "savePassword");
 }
@@ -338,8 +332,7 @@ void SSHKey::fromJSON(const JSON &json) {
  * Write to JSON.
  */
 JSON & SSHKey::toJSON(JSON &json) const {
-    json["file"] = privateFile;
-    json["host"] = host;
+    json["host"] = hostName;
     if (savePassword) {
         json["password"] = password;
         json["savePassword"] = savePassword;

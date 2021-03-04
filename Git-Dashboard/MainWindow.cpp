@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menubar->setVisible(true);
 
     configurationChanged();
-    timerId = startTimer(15000);
+    timerId = startTimer(60000);
 }
 
 /**
@@ -118,7 +118,7 @@ void MainWindow::on_actionOpenConfiguration_triggered()
  * Force an update.
  */
 void
-MainWindow::timerEvent(QTimerEvent *event) {
+MainWindow::timerEvent(QTimerEvent *) {
     for (int index = 0; index < hostForms.size(); ++index) {
         HostForm * hostForm = hostForms.at(index);
         hostForm->update();
