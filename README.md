@@ -9,8 +9,8 @@ That's it. I use this to keep me from doing new development on a release branch 
 # Status
 Consider this version 0.9. It's a pretty simple app, after all. Missing:
 
-  * Does not currently perform the fetch, so it won't report ahead/behind
-  * It's REALLY ugly
+  * It performs the fetch, but it does it in the foreground. Yuck!
+  * It's REALLY ugly. But at least it has an icon now.
 
 # Where to Download
 Once I have version 1.0.0 complete, I'll stand up a server for downloads.
