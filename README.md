@@ -71,3 +71,5 @@ Feel free to clone, update, but please issue a pull request. See the Conventions
 
 # License
 Released under the MIT license, which is attached to this project.
+
+The Git-Dashboard icon is from FreeIconsPng: <a href="https://www.freeiconspng.com/img/38973" title="Image from freeiconspng.com"><img src="https://www.freeiconspng.com/uploads/github-circle-mascot-git-icon-6.png" width="50" alt="github, circle, mascot, git icon" /></a>. I then modified it to make it look a little more awesome.
