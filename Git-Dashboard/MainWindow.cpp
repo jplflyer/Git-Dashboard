@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->menubar->setVisible(true);
+    ui->statusbar->hide();
 
     configurationChanged();
     timerId = startTimer(60000);
@@ -79,6 +80,7 @@ MainWindow::configurationChanged() {
     for (int index = rows.size(); index < numRows; ++index) {
         QWidget * thisRow = new QWidget(ui->rowsContainer);
         QHBoxLayout * layout = new QHBoxLayout();
+        layout->setContentsMargins(4, 1, 4, 1);
         thisRow->setLayout(layout);
         ui->rowsContainer->layout()->addWidget(thisRow);
         thisRow->show();

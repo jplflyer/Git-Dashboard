@@ -40,7 +40,7 @@ private:
     //		-Branch name is either "master" or "main" -- use palMaster.
     //		-Otherwise use palBranch.
     //----------------------------------------------------------------------
-    QPalette palEven;
+    QPalette palEvenOutside;
     QPalette palAhead;
     QPalette palBehind;
     QPalette palMaster;

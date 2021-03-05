@@ -18,25 +18,25 @@ HostForm::HostForm(Repository::Pointer repo, QWidget *parent) :
     ui->setupUi(this);
     ui->repoNameL->setText(QString::fromStdString(repository->gitRemote()->name()));
 
-    palEven = palette();
+    palEvenOutside = palette();
     palAhead = palette();
     palBehind = palette();
     palMaster = palette();
     palBranch = palette();
 
-    QColor colorEven;
+    QColor colorEvenOutside;
     QColor colorAhead;
     QColor colorBehind;
     QColor colorMaster;
     QColor colorBranch;
 
-    colorEven.setHsv(-1, 40, 200);
+    colorEvenOutside.setHsv(-1, 40, 200);
     colorAhead.setHsv(240, 150, 200);
     colorBehind.setHsv(0, 150, 200);
-    colorMaster.setHsv(-1, 0, 230);
+    colorMaster.setHsv(-1, 0, 255);
     colorBranch.setHsv(150, 150, 230);
 
-    palEven.setColor(QPalette::Window, colorEven);
+    palEvenOutside.setColor(QPalette::Window, colorEvenOutside);
     palAhead.setColor(QPalette::Window, colorAhead);
     palBehind.setColor(QPalette::Window, colorBehind);
     palMaster.setColor(QPalette::Window, colorMaster);
@@ -45,6 +45,11 @@ HostForm::HostForm(Repository::Pointer repo, QWidget *parent) :
     ui->aheadFrame->setAutoFillBackground(true);
     ui->behindFrame->setAutoFillBackground(true);
     ui->mainContainer->setAutoFillBackground(true);
+
+    QFont font = ui->repoNameL->font();
+    font.setPointSize(font.pointSize() * 1.3);
+    font.setBold(true);
+    ui->repoNameL->setFont(font);
 
     update();
 }
@@ -60,21 +65,15 @@ HostForm::~HostForm()
 void
 HostForm::update() {
     string branch = repository->currentBranch();
+    QPalette insidePalette =  (branch == "main" || branch == "master") ? palMaster : palBranch;
     int ahead = repository->gitRepository()->commitsAheadRemote();
     int behind = repository->gitRepository()->commitsBehindRemote();
 
-    ui->aheadFrame->setPalette(ahead > 0 ? palAhead : palEven);
-    ui->behindFrame->setPalette(behind > 0 ? palBehind : palEven);
+    ui->mainContainer->setPalette(insidePalette);
+    ui->aheadFrame->setPalette(ahead > 0 ? palAhead : insidePalette);
+    ui->behindFrame->setPalette(behind > 0 ? palBehind : palEvenOutside);
 
     ui->branchValue->setText(QString::fromStdString(branch));
     ui->commitsAheadValue->setText(QString::number(ahead));
     ui->commitsBehindValue->setText(QString::number(behind));
-
-    if (branch == "main" || branch == "master") {
-        ui->mainContainer->setPalette(palMaster);
-    }
-    else {
-        ui->mainContainer->setPalette(palBranch);
-    }
-
 }
