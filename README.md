@@ -7,10 +7,8 @@ This project provides a GUI dashboard for showing the status of your current Git
 That's it. I use this to keep me from doing new development on a release branch (for instance).
 
 # Status
-Consider this version 0.9. It's a pretty simple app, after all. Missing:
+This is Git-Dashboard Version 1.0.0. It works as designed. Currently, I'm only building on Mac.
 
-  * It performs the fetch, but it does it in the foreground. Yuck!
-  * It's REALLY ugly. But at least it has an icon now.
 
 # Where to Download
 Once I have version 1.0.0 complete, I'll stand up a server for downloads.
