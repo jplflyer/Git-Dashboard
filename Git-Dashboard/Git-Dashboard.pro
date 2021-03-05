@@ -13,6 +13,7 @@ LIBS += -lshowgit-mac -lshow-mac -lgit2 -lcurl -lssl -lz -liconv -lssh2 -lcrypto
 LIBS += -framework CoreFoundation -framework Security
 
 SOURCES += \
+    AboutWindow.cpp \
     Configuration.cpp \
     CreateConfigWindow.cpp \
     FetchWorker.cpp \
@@ -22,15 +23,18 @@ SOURCES += \
     MainWindow.cpp
 
 HEADERS += \
+    AboutWindow.h \
     Configuration.h \
     CreateConfigWindow.h \
     FetchWorker.h \
     GenericItemModel.h \
     GetPasswordsWindow.h \
     HostForm.h \
-    MainWindow.h
+    MainWindow.h \
+    Version.h
 
 FORMS += \
+    AboutWindow.ui \
     CreateConfigWindow.ui \
     GetPasswordsWindow.ui \
     HostForm.ui \
@@ -43,3 +47,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     ../../Git-Dashboard/Git-Dashboard/Git-Dashboard.icns
+
+RESOURCES += \
+    Images.qrc

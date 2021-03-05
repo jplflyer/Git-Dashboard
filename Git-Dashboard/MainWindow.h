@@ -23,6 +23,7 @@ public slots:
 
 private slots:
     void on_actionOpenConfiguration_triggered();
+    void on_actionCopyright_triggered();
 
 private:
     Ui::MainWindow *ui;

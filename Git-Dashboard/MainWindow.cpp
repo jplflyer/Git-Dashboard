@@ -3,6 +3,7 @@
 
 #include <QLayout>
 
+#include "AboutWindow.h"
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
@@ -125,4 +126,10 @@ MainWindow::timerEvent(QTimerEvent *) {
         HostForm * hostForm = hostForms.at(index);
         hostForm->update();
     }
+}
+
+void MainWindow::on_actionCopyright_triggered()
+{
+    AboutWindow * window = new AboutWindow();
+    window->show();
 }
