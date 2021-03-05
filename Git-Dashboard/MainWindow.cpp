@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusbar->hide();
 
     configurationChanged();
-    timerId = startTimer(60000);
+    timerId = startTimer(15000);
 }
 
 /**
