@@ -5,6 +5,7 @@
 #include "Configuration.h"
 
 #include "CreateConfigWindow.h"
+#include "FetchWorker.h"
 #include "GetPasswordsWindow.h"
 #include "MainWindow.h"
 
@@ -16,6 +17,7 @@ extern void showConfigWindow();
 //======================================================================
 static MainWindow *mainWindow = nullptr;
 static CreateConfigWindow *configWindow = nullptr;
+static FetchWorker *fetchWorker = nullptr;
 
 //======================================================================
 //
@@ -34,6 +36,9 @@ void showMainWindow() {
     mainWindow->show();
     if (shouldUpdate) {
         mainWindow->configurationChanged();
+    }
+    if (fetchWorker == nullptr) {
+        fetchWorker = new FetchWorker();
     }
 }
 
