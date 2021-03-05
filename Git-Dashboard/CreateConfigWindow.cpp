@@ -26,7 +26,7 @@ CreateConfigWindow::CreateConfigWindow(QWidget *parent) :
     ui->setupUi(this);
 
     model.addColumn("Visible", [](Repository::Pointer ptr) { return !ptr->isHidden(); });
-    model.addColumn("Directory", [](Repository::Pointer ptr) { return QString::fromStdString(ptr->getDirectory()); } );
+    model.addColumn("Project", [](Repository::Pointer ptr) { return QString::fromStdString(ptr->gitRemote()->name()); } );
     model.addColumn("Branch", [](Repository::Pointer ptr) { return QString::fromStdString(ptr->currentBranch()); } );
 
     Configuration & config = Configuration::singleton();
@@ -35,6 +35,10 @@ CreateConfigWindow::CreateConfigWindow(QWidget *parent) :
     ui->rowsSpin->setValue(config.getRows());
 
     ui->repositoriesTable->setModel(&model);
+
+    QHeaderView *headerView = new QHeaderView(Qt::Horizontal, ui->repositoriesTable);
+    ui->repositoriesTable->setHorizontalHeader(headerView);
+    headerView->setSectionResizeMode(1, QHeaderView::Stretch);
 }
 
 /**

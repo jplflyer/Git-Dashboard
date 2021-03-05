@@ -16,7 +16,7 @@ HostForm::HostForm(Repository::Pointer repo, QWidget *parent) :
     repository(repo)
 {
     ui->setupUi(this);
-    ui->repoNameL->setText(QString::fromStdString(repository->getDirectory()));
+    ui->repoNameL->setText(QString::fromStdString(repository->gitRemote()->name()));
 
     palEven = palette();
     palAhead = palette();
