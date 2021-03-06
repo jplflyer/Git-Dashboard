@@ -78,8 +78,7 @@ void CreateConfigWindow::fixButtons() {
 /**
  * Add a repository.
  */
-void CreateConfigWindow::on_addRepoPB_clicked()
-{
+void CreateConfigWindow::on_addRepoPB_clicked() {
     QString dirName = QFileDialog::getExistingDirectory(this, "Repository Directory", getStartingDirectory());
     if (dirName.isEmpty()) {
         return;
@@ -141,8 +140,7 @@ CreateConfigWindow::rememberParent(const QString &dirName) {
 /**
  * Save and switch to the main window.
  */
-void CreateConfigWindow::on_mainWindowPB_clicked()
-{
+void CreateConfigWindow::on_mainWindowPB_clicked() {
     showMainWindow();
     close();
 }
@@ -150,8 +148,7 @@ void CreateConfigWindow::on_mainWindowPB_clicked()
 /**
  * The number of rows field uses a spinner. They changed the value.
  */
-void CreateConfigWindow::on_rowsSpin_valueChanged(int value)
-{
+void CreateConfigWindow::on_rowsSpin_valueChanged(int value) {
     Configuration::singleton().setRows(value);
     Configuration::save();
 }
@@ -159,8 +156,7 @@ void CreateConfigWindow::on_rowsSpin_valueChanged(int value)
 /**
  * The number of columns field uses a spinner. They changed the value.
  */
-void CreateConfigWindow::on_columnsSpin_valueChanged(int value)
-{
+void CreateConfigWindow::on_columnsSpin_valueChanged(int value) {
     Configuration::singleton().setColumns(value);
     Configuration::save();
 }
@@ -185,8 +181,7 @@ CreateConfigWindow::selectionChanged(const QItemSelection &selected, const QItem
  * Move current repo up. We don't need to range check, as the
  * Configuration class already does it.
  */
-void CreateConfigWindow::on_upPB_clicked()
-{
+void CreateConfigWindow::on_upPB_clicked() {
     if (Configuration::singleton().swapRepositories(selectedRow, selectedRow - 1)) {
         Configuration::save();
         --selectedRow;
@@ -199,8 +194,7 @@ void CreateConfigWindow::on_upPB_clicked()
 /**
  * Move current repo down.
  */
-void CreateConfigWindow::on_downPB_clicked()
-{
+void CreateConfigWindow::on_downPB_clicked() {
     if (Configuration::singleton().swapRepositories(selectedRow, selectedRow + 1)) {
         Configuration::save();
         ++selectedRow;
@@ -210,6 +204,13 @@ void CreateConfigWindow::on_downPB_clicked()
     }
 }
 
-void CreateConfigWindow::on_removePB_clicked()
-{
+/**
+ * Confirmation dialogs are for wimps.
+ */
+void CreateConfigWindow::on_removePB_clicked() {
+    if (Configuration::singleton().removeRepository(selectedRow)) {
+        ui->repositoriesTable->clearSelection();
+        model.setVector(Configuration::singleton().getRepositories());
+        fixButtons();
+    }
 }

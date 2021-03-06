@@ -144,12 +144,26 @@ public:
     ShowLib::StringVector sshFilesNeedingPasswords() const;
     void setSSHPassword(const std::string &forFile, const std::string &password);
 
+    /**
+     * Swap two.
+     */
     bool swapRepositories(int firstIndex, int secondIndex) {
         if (   ShowLib::inSizeRange(firstIndex, repositories)
             && ShowLib::inSizeRange(secondIndex, repositories)
             && firstIndex != secondIndex )
         {
             std::swap(repositories[firstIndex], repositories[secondIndex]);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Forget one.
+     */
+    bool removeRepository(int index) {
+        if (   ShowLib::inSizeRange(index, repositories) ) {
+            repositories.erase(repositories.begin() + index);
             return true;
         }
         return false;
