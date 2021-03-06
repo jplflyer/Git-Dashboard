@@ -1,9 +1,12 @@
 #include <iostream>
+#include <algorithm>
+#include <filesystem>
 
 #include <pwd.h>
-#include <sys/stat.h>
+// #include <sys/stat.h>
 #include <unistd.h>
-#include <filesystem>
+
+#include <showlib/NumericOperators.h>
 
 #include <QFileDialog>
 #include <QInputDialog>
@@ -40,6 +43,9 @@ CreateConfigWindow::CreateConfigWindow(QWidget *parent) :
     QHeaderView *headerView = new QHeaderView(Qt::Horizontal, ui->repositoriesTable);
     ui->repositoriesTable->setHorizontalHeader(headerView);
     headerView->setSectionResizeMode(1, QHeaderView::Stretch);
+
+    QItemSelectionModel * selModel = ui->repositoriesTable->selectionModel();
+    connect(selModel, &QItemSelectionModel::selectionChanged, this, &CreateConfigWindow::selectionChanged);
 }
 
 /**
@@ -55,6 +61,18 @@ CreateConfigWindow::~CreateConfigWindow()
  */
 void CreateConfigWindow::update() {
     model.setVector(Configuration::singleton().getRepositories());
+}
+
+/**
+ * Adjust the enabled property of buttons as appropriate.
+ */
+void CreateConfigWindow::fixButtons() {
+    const Repository::Vector & repos = Configuration::singleton().getRepositories();
+    bool inRange = ShowLib::inSizeRange(selectedRow, repos.size());
+
+    ui->removePB->setEnabled(inRange);
+    ui->upPB->setEnabled(inRange && selectedRow > 0);
+    ui->downPB->setEnabled( ShowLib::inSizeRange(selectedRow, repos.size() - 1) );
 }
 
 /**
@@ -126,16 +144,72 @@ CreateConfigWindow::rememberParent(const QString &dirName) {
 void CreateConfigWindow::on_mainWindowPB_clicked()
 {
     showMainWindow();
+    close();
 }
 
+/**
+ * The number of rows field uses a spinner. They changed the value.
+ */
 void CreateConfigWindow::on_rowsSpin_valueChanged(int value)
 {
     Configuration::singleton().setRows(value);
     Configuration::save();
 }
 
+/**
+ * The number of columns field uses a spinner. They changed the value.
+ */
 void CreateConfigWindow::on_columnsSpin_valueChanged(int value)
 {
     Configuration::singleton().setColumns(value);
     Configuration::save();
+}
+
+/**
+ * The selection changed. Turn on with a click, off with command-click.
+ */
+void
+CreateConfigWindow::selectionChanged(const QItemSelection &selected, const QItemSelection &) {
+    selectedRow = -1;
+
+    const QModelIndexList & indexes = selected.indexes();
+    for (const QModelIndex &index: indexes) {
+        selectedRow = index.row();
+    }
+
+    fixButtons();
+}
+
+
+/**
+ * Move current repo up. We don't need to range check, as the
+ * Configuration class already does it.
+ */
+void CreateConfigWindow::on_upPB_clicked()
+{
+    if (Configuration::singleton().swapRepositories(selectedRow, selectedRow - 1)) {
+        Configuration::save();
+        --selectedRow;
+        ui->repositoriesTable->selectRow(selectedRow);
+        model.setVector(Configuration::singleton().getRepositories());
+        fixButtons();
+    }
+}
+
+/**
+ * Move current repo down.
+ */
+void CreateConfigWindow::on_downPB_clicked()
+{
+    if (Configuration::singleton().swapRepositories(selectedRow, selectedRow + 1)) {
+        Configuration::save();
+        ++selectedRow;
+        ui->repositoriesTable->selectRow(selectedRow);
+        model.setVector(Configuration::singleton().getRepositories());
+        fixButtons();
+    }
+}
+
+void CreateConfigWindow::on_removePB_clicked()
+{
 }

@@ -50,18 +50,15 @@ MainWindow::configurationChanged() {
         numRows = ceil(static_cast<double>(repoCount) / static_cast<double>(numCols));
     }
 
-    /**
-     * If this has changed, we need to erase all our old stuff.
-     */
-    if (numCols != displayedColumns) {
-        for (int index = 0; index < hostForms.size(); ++index) {
-            HostForm * hostForm = hostForms.at(index);
-            QWidget * thisRow = rows.at(index / displayedColumns);
-            hostForm->deleteLater();
-            thisRow->layout()->removeWidget(hostForm);
-        }
-        hostForms.clear();
+    // Close out the old ones.
+    for (int index = 0; index < hostForms.size(); ++index) {
+        HostForm * hostForm = hostForms.at(index);
+        QWidget * thisRow = rows.at(index / displayedColumns);
+        hostForm->deleteLater();
+        thisRow->layout()->removeWidget(hostForm);
     }
+    hostForms.clear();
+
     displayedRows = numRows;
     displayedColumns = numCols;
 

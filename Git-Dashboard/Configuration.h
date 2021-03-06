@@ -12,6 +12,7 @@
 #include <showlib/JSONSerializable.h>
 #include <showlib/StringVector.h>
 #include <showlib/SSHConfiguration.h>
+#include <showlib/NumericOperators.h>
 #include <git/Git.h>
 
 /**
@@ -142,5 +143,17 @@ public:
 
     ShowLib::StringVector sshFilesNeedingPasswords() const;
     void setSSHPassword(const std::string &forFile, const std::string &password);
+
+    bool swapRepositories(int firstIndex, int secondIndex) {
+        if (   ShowLib::inSizeRange(firstIndex, repositories)
+            && ShowLib::inSizeRange(secondIndex, repositories)
+            && firstIndex != secondIndex )
+        {
+            std::swap(repositories[firstIndex], repositories[secondIndex]);
+            return true;
+        }
+        return false;
+    }
+
 };
 
