@@ -85,3 +85,15 @@ void GetPasswordsWindow::on_passwordTF_textChanged(const QString &) {
     std::string text = trim(ui->passwordTF->text().toStdString());
     ui->nextBtn->setEnabled(text.length() > 0);
 }
+
+/**
+ * User hit Return, which should do the same thing as hitting Next, but
+ * only if there is text.
+ */
+void GetPasswordsWindow::on_passwordTF_returnPressed()
+{
+    std::string text = trim(ui->passwordTF->text().toStdString());
+    if (text.length() > 0) {
+        on_nextBtn_clicked();
+    }
+}

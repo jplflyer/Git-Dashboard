@@ -21,6 +21,8 @@ private slots:
     void on_nextBtn_clicked();
     void on_passwordTF_textChanged(const QString &arg1);
 
+    void on_passwordTF_returnPressed();
+
 private:
     Ui::GetPasswordsWindow *ui;
     ShowLib::StringVector sshFilesNeedingPasswords;
