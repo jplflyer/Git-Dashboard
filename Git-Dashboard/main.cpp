@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
 
     Configuration & config = Configuration::singleton();
     if (config.load() == 0) {
-        // We've been run before.
-        showMainWindow();
+        // We haven't been run before.
+        showConfigWindow();
     }
     else {
         StringVector sshFilesNeedingPasswords = config.sshFilesNeedingPasswords();
@@ -75,7 +75,8 @@ int main(int argc, char *argv[])
             win->show();
         }
         else {
-            showConfigWindow();
+            // No pws needed.
+            showMainWindow();
         }
     }
 

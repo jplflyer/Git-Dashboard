@@ -3,7 +3,6 @@
 #include <filesystem>
 
 #include <pwd.h>
-// #include <sys/stat.h>
 #include <unistd.h>
 
 #include <showlib/NumericOperators.h>
@@ -13,6 +12,7 @@
 
 #include "CreateConfigWindow.h"
 #include "ui_CreateConfigWindow.h"
+#include "GetPasswordsWindow.h"
 
 using std::cout;
 using std::endl;
@@ -87,6 +87,7 @@ void CreateConfigWindow::on_addRepoPB_clicked() {
 
     Repository::Pointer repo =  Configuration::singleton().addRepository(dirName.toStdString());
 
+    /*
     SSHKey::Pointer key = repo->getKey();
     if (key->getPassword().length() == 0) {
         bool ok;
@@ -103,6 +104,7 @@ void CreateConfigWindow::on_addRepoPB_clicked() {
             key->setPassword(pw.toStdString());
         }
     }
+    */
 
     Configuration::save();
     update();
@@ -141,7 +143,16 @@ CreateConfigWindow::rememberParent(const QString &dirName) {
  * Save and switch to the main window.
  */
 void CreateConfigWindow::on_mainWindowPB_clicked() {
-    showMainWindow();
+    StringVector sshFilesNeedingPasswords = Configuration::singleton().sshFilesNeedingPasswords();
+    if (sshFilesNeedingPasswords.size() > 0) {
+        GetPasswordsWindow * win = new GetPasswordsWindow(sshFilesNeedingPasswords);
+        win->setAttribute(Qt::WA_DeleteOnClose);
+        win->show();
+    }
+    else {
+        showMainWindow();
+    }
+
     close();
 }
 
