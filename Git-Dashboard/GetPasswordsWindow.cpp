@@ -1,4 +1,11 @@
 #include <iostream>
+#include <stdio.h>
+
+#include <openssl/pem.h>
+#include <openssl/rsa.h>
+#include <openssl/err.h>
+
+#include <QMessageBox>
 
 #include <showlib/StringUtils.h>
 
@@ -68,6 +75,14 @@ void GetPasswordsWindow::on_revealCB_stateChanged(int) {
  */
 void GetPasswordsWindow::on_nextBtn_clicked() {
     std::string text = trim(ui->passwordTF->text().toStdString());
+    std::string fName = *sshFilesNeedingPasswords.at(fileIndex);
+
+    FILE * fp = fopen(fName.c_str(), "r");
+    RSA * rsaKey = PEM_read_RSAPrivateKey(fp, NULL, NULL, (void *)text.c_str());
+    if (rsaKey == nullptr || !RSA_check_key(rsaKey)) {
+        QMessageBox::critical(nullptr, "Invalid Password", "Invalid Password. Try again.");
+        return;
+    }
 
     Configuration & config = Configuration::singleton();
     config.setSSHPassword(*sshFilesNeedingPasswords.at(fileIndex), text);
