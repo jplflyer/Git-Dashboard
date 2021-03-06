@@ -22,14 +22,15 @@ public:
 private slots:
     void on_addRepoPB_clicked();
     void on_mainWindowPB_clicked();
-
     void on_rowsSpin_valueChanged(int arg1);
-
     void on_columnsSpin_valueChanged(int arg1);
 
 private:
     Ui::CreateConfigWindow *ui;
-
     GenericItemModel<Repository> model;
+    std::string startFromDir;
+
+    QString getStartingDirectory();
+    void rememberParent(const QString & dirName);
 };
 

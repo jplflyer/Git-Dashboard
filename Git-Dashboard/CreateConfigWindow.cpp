@@ -3,6 +3,7 @@
 #include <pwd.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <filesystem>
 
 #include <QFileDialog>
 #include <QInputDialog>
@@ -61,11 +62,11 @@ void CreateConfigWindow::update() {
  */
 void CreateConfigWindow::on_addRepoPB_clicked()
 {
-    // Get home directory.
-    struct passwd * pwd = getpwuid(getuid());
-    QString homeDir { pwd->pw_dir };
-
-    QString dirName = QFileDialog::getExistingDirectory(this, "Repository Directory", homeDir);
+    QString dirName = QFileDialog::getExistingDirectory(this, "Repository Directory", getStartingDirectory());
+    if (dirName.isEmpty()) {
+        return;
+    }
+    rememberParent(dirName);
 
     Repository::Pointer repo =  Configuration::singleton().addRepository(dirName.toStdString());
 
@@ -88,6 +89,35 @@ void CreateConfigWindow::on_addRepoPB_clicked()
 
     Configuration::save();
     update();
+}
+
+/**
+ * Where does our File Dialog start when adding a new repo.
+ * We start at their home directory the first time and then
+ * remember the parent directory after that.
+ *
+ * This method may not work on Windows -- no idea.
+ */
+QString
+CreateConfigWindow::getStartingDirectory() {
+    if (startFromDir.length() == 0) {
+        struct passwd * pwd = getpwuid(getuid());
+        startFromDir = pwd->pw_dir;
+    }
+
+    return QString::fromStdString(startFromDir);
+}
+
+/**
+ * They asked us to open the repo represented by this directory.
+ * We store the parent.
+ */
+void
+CreateConfigWindow::rememberParent(const QString &dirName) {
+    std::filesystem::path dirPath(dirName.toStdString());
+    std::filesystem::path parentPath = dirPath.parent_path();
+
+    startFromDir = parentPath.generic_string();
 }
 
 /**
