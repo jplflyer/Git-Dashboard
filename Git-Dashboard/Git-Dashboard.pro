@@ -9,6 +9,7 @@ QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.15
 INCLUDEPATH += /usr/local/include
 
 LIBS += -L/usr/local/lib
+LIBS += -L/usr/local/opt/openssl/lib
 LIBS += -lshowgit-mac -lshow-mac -lgit2 -lcurl -lssl -lz -liconv -lssh2 -lcrypto
 LIBS += -framework CoreFoundation -framework Security
 
